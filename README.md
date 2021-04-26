@@ -15,5 +15,5 @@ Dependancies:
 
 ```console
 $ make
-$ ./emoteJAM
+$ ./emoteJAM ./assets/tsodinClown.png
 ```
