@@ -140,6 +140,25 @@ void save_renderer_to_png_file(SDL_Renderer *renderer,
     }
 }
 
+void save_animation(SDL_Renderer *renderer, SDL_Texture *emote_texture,
+                    const SDL_Rect *emote_texture_rect,
+                    size_t fps, Seconds duration)
+{
+    Seconds delta_time = 1.0f / static_cast<float>(fps);
+    Seconds time = 0.0f;
+
+    char file_path[1024];
+
+    for (size_t frame_index = 0; time <= duration; ++frame_index) {
+        float stretch = sinf(6.0f * time) * 0.5f + 1.0f;
+        render_state(renderer, emote_texture, emote_texture_rect, stretch);
+        snprintf(file_path, sizeof(file_path), "frame-%02zu.png", frame_index);
+        save_renderer_to_png_file(renderer, file_path);
+        println(stdout, "Saved ", file_path);
+        time += delta_time;
+    }
+}
+
 int main(int argc, char **argv)
 {
     Args args = {argc, argv};
@@ -209,23 +228,22 @@ int main(int argc, char **argv)
             }
             break;
 
-#if 0
             case SDL_KEYDOWN: {
                 switch (event.key.keysym.sym) {
                 case SDLK_s: {
                     sdl_check(SDL_SetRenderTarget(renderer, target));
                     defer(SDL_SetRenderTarget(renderer, NULL));
 
-                    render_state(renderer, emote_texture, &emote_texture_rect);
-                    Uint32 begin = SDL_GetTicks();
-                    save_renderer_to_png_file(renderer, "output.png");
-                    println(stdout, SDL_GetTicks() - begin);
+                    save_animation(renderer,
+                                   emote_texture,
+                                   &emote_texture_rect,
+                                   15,
+                                   2.0f * M_PI / 6.0f);
                 }
                 break;
                 }
             }
             break;
-#endif
             }
         }
 
