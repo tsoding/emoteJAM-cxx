@@ -1,5 +1,7 @@
 # emoteJAM
 
+![tsodinClown](./assets/tsodinClown.png)
+
 **WARNING! The application is in active development and can't do anything yet.**
 
 A simple application that generates animated BTTV emotes from static images.
