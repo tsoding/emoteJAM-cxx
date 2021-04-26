@@ -1,6 +1,6 @@
 # emoteJAM
 
-![tsodinClown](./assets/tsodinClown.png)
+![tsodinClowning](./assets/tsodinClowning.gif)
 
 **WARNING! The application is in active development and can't do anything yet.**
 
