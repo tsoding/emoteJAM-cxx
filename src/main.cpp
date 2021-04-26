@@ -32,6 +32,9 @@ SDL_Texture *texture_from_file(SDL_Renderer *renderer, const char *file_path)
 {
     int width, height;
     unsigned char *pixels = stbi_load(file_path, &width, &height, NULL, 4);
+    if (pixels == NULL) {
+        panic("ERROR: could not load file ", file_path, ": ", strerror(errno));
+    }
     defer(stbi_image_free(pixels));
 
     SDL_Surface *surface =
