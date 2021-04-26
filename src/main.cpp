@@ -76,7 +76,7 @@ void render_state(SDL_Renderer *renderer,
                   const SDL_Rect *texture_src,
                   float stretch)
 {
-    sdl_check(SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255));
+    sdl_check(SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255));
     sdl_check(SDL_RenderClear(renderer));
 
     SDL_Rect texture_dest = {};
@@ -121,6 +121,13 @@ void save_renderer_to_png_file(SDL_Renderer *renderer,
                       target_format,
                       pixels,
                       sizeof(*pixels) * target_rect.w));
+        for (int y = 0; y < target_rect.h; ++y) {
+            for (int x = 0; x < target_rect.w; ++x) {
+                if (pixels[y * target_rect.w + x] == 0xFF00FF00) {
+                    pixels[y * target_rect.w + x] = 0;
+                }
+            }
+        }
         println(stdout, "read pixels: ", SDL_GetTicks() - begin);
     }
 
