@@ -10,6 +10,20 @@
 
 using namespace aids;
 
+using Seconds = float;
+using Milliseconds = Uint32;
+
+const size_t DISPLAY_WIDTH = 800;
+const size_t DISPLAY_HEIGHT = 800;
+const size_t DISPLAY_FPS = 60;
+const Milliseconds DELTA_TIME_MS = 1000 / DISPLAY_FPS;
+const Seconds DELTA_TIME_SECS = 1.0f / static_cast<float>(DISPLAY_FPS);
+
+Seconds current_time()
+{
+    return static_cast<float>(SDL_GetTicks()) / 1000.0f;
+}
+
 void sdl_check(int code)
 {
     if (code < 0) {
@@ -59,15 +73,25 @@ SDL_Texture *texture_from_file(SDL_Renderer *renderer, const char *file_path)
 
 void render_state(SDL_Renderer *renderer,
                   SDL_Texture *texture,
-                  const SDL_Rect *texture_rect)
+                  const SDL_Rect *texture_src,
+                  float stretch)
 {
     sdl_check(SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255));
     sdl_check(SDL_RenderClear(renderer));
 
+    SDL_Rect texture_dest = {};
+
+    texture_dest.h = static_cast<int>(floorf(static_cast<float>(texture_src->h) * stretch));
+    texture_dest.w = static_cast<int>(floorf(static_cast<float>(texture_src->w) * (2.0f - stretch)));
+    const int bottom_x = texture_src->x + texture_src->w / 2;
+    const int bottom_y = texture_src->y + texture_src->h;
+    texture_dest.x = bottom_x - texture_dest.w / 2;
+    texture_dest.y = bottom_y - texture_dest.h;
+
     sdl_check(SDL_RenderCopy(renderer,
                              texture,
-                             texture_rect,
-                             texture_rect));
+                             texture_src,
+                             &texture_dest));
 
     SDL_RenderPresent(renderer);
 }
@@ -124,8 +148,6 @@ int main(int argc, char **argv)
     sdl_check(SDL_Init(SDL_INIT_VIDEO));
     defer(SDL_Quit());
 
-    const size_t DISPLAY_WIDTH = 800;
-    const size_t DISPLAY_HEIGHT = 800;
     SDL_Window *window =
         sdl_check(SDL_CreateWindow(
                       "emoteJAM",
@@ -169,6 +191,7 @@ int main(int argc, char **argv)
                                   emote_texture_rect.h));
 
 
+
     bool quit = false;
     while (!quit) {
         SDL_Event event = {};
@@ -179,6 +202,7 @@ int main(int argc, char **argv)
             }
             break;
 
+#if 0
             case SDL_KEYDOWN: {
                 switch (event.key.keysym.sym) {
                 case SDLK_s: {
@@ -194,10 +218,13 @@ int main(int argc, char **argv)
                 }
             }
             break;
+#endif
             }
         }
 
-        render_state(renderer, emote_texture, &emote_texture_rect);
+        float stretch = sinf(6.0f * current_time()) * 0.5f + 1.0f;
+        render_state(renderer, emote_texture, &emote_texture_rect, stretch);
+        SDL_Delay(DELTA_TIME_MS);
     }
 
     return 0;
