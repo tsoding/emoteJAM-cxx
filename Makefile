@@ -1,4 +1,4 @@
-CXXFLAGS=-Wall -Wextra -std=c++17 -pedantic `pkg-config --cflags sdl2`
+CXXFLAGS=-Wall -Wextra -std=c++17 -pedantic -fno-exceptions `pkg-config --cflags sdl2`
 LIBS=`pkg-config --libs sdl2`
 
 emoteJAM: src/main.cpp src/aids.hpp
